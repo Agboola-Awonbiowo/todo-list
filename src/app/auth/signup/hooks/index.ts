@@ -5,6 +5,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm as useReactHookForm } from "react-hook-form";
 import { z } from "zod";
@@ -57,16 +58,16 @@ export const useForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [googleLoading, setGoogleLoading] = useState<boolean>(false);
   const [facebookLoading, setFacebookLoading] = useState<boolean>(false);
-
+  const router = useRouter();
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setLoading(true);
     setSubmissionError(null);
     try {
       await createUserWithEmailAndPassword(auth, data.email, data.password);
+      router.push("/auth/login");
       reset();
     } catch (error: any) {
       if (error.code) {
-        console.log(error.code);
         setSubmissionError(error.code);
       } else {
         setSubmissionError("An unexpected error occurred. Please try again.");
@@ -80,7 +81,10 @@ export const useForm = () => {
     const provider = new GoogleAuthProvider();
     try {
       setGoogleLoading(true);
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const token = await result.user.getIdToken();
+      localStorage.setItem("authToken", token);
+      router.push("/todo");
     } catch (error: any) {
       setSubmissionError(error.code);
     } finally {
@@ -92,7 +96,10 @@ export const useForm = () => {
     const provider = new FacebookAuthProvider();
     try {
       setFacebookLoading(true);
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const token = await result.user.getIdToken();
+      localStorage.setItem("authToken", token);
+      router.push("/todo");
     } catch (error: any) {
       setSubmissionError(error.code);
     } finally {

@@ -1,12 +1,21 @@
 "use client";
 import background from "@public/images/background.jpeg";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      router.push("/todo");
+    }
+  }, [router]);
   return (
     <div className="w-full h-screen flex overflow-x-hidden px-[16px] xl:px-0">
       <div className="flex-1 w-full xl:w-1/2 xl:pt-[100px] pt-[40px] flex  overflow-y-scroll no-scrollbar  justify-center">

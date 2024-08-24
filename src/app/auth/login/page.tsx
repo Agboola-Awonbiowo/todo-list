@@ -55,7 +55,7 @@ const page: FC<pageProps> = ({}) => {
         )}
         <div className="mt-[30px]">
           <Button isLoading={loading} disabled={loading} type="submit">
-            Sign up
+            Login
           </Button>
         </div>
       </form>
