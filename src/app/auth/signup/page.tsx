@@ -3,30 +3,56 @@ import { Button } from "@/shared/button";
 import { Inputfield } from "@/shared/inputfield";
 import Link from "next/link";
 import React, { FC } from "react";
+import { useForm } from "./hooks";
 
 interface pageProps {}
 
 const page: FC<pageProps> = ({}) => {
+  const { register, handleSubmit, errors, submissionError, onSubmit } =
+    useForm();
   return (
     <div className="mt-[20px]">
-      <Inputfield label="Email" placeholder="Example@gmail.com" type="email" />
-      <div className="mt-[16px]">
-        <Inputfield
-          label="Password"
-          placeholder="At leat 8 characters"
-          type="password"
-        />
-      </div>
-      <div className="mt-[16px]">
-        <Inputfield
-          label="Confirm  Password"
-          placeholder="Confirm Password"
-          type="password"
-        />
-      </div>
-      <div className="mt-[30px]">
-        <Button type="submit">Send</Button>
-      </div>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div>
+          <Inputfield
+            label="Email"
+            placeholder="Example@gmail.com"
+            type="email"
+            {...register("email")}
+          />
+          <p className="text-darkRed text-xs mt-[5px]">
+            {errors.email?.message}
+          </p>
+        </div>
+        <div className="mt-[16px]">
+          <Inputfield
+            label="Password"
+            placeholder="At leat 8 characters"
+            type="password"
+            {...register("password")}
+          />
+          <p className="text-darkRed text-xs mt-[5px]">
+            {errors.password?.message}
+          </p>
+        </div>
+        <div className="mt-[16px]">
+          <Inputfield
+            label="Confirm  Password"
+            placeholder="Confirm Password"
+            type="password"
+            {...register("confirmPassword")}
+          />
+          <p className="text-darkRed text-xs mt-[5px]">
+            {errors.confirmPassword?.message}
+          </p>
+        </div>
+        {submissionError && (
+          <p className="text-red-600 mt-2">{submissionError}</p>
+        )}
+        <div className="mt-[30px]">
+          <Button type="submit">Sign up</Button>
+        </div>
+      </form>
       <div className="flex items-center gap-x-[10px] mt-[30px]">
         <div className="border border-zinc-500 w-full"></div>
         <p>Or</p>
