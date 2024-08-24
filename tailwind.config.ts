@@ -35,7 +35,7 @@ const config: Config = {
         secondaryColor: "#0FB583",
         silverCity: "#E2E4E9",
         dimGray: "#525866",
-        beige: "#EBEBEB",       
+        beige: "#EBEBEB",
         inputRingColor: "#E4E5E7",
         soft400: "#868C98",
         "custom-rgba": "rgba(242, 250, 238, 1)",
@@ -43,6 +43,20 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }: { addUtilities: Function }) {
+      const newUtilities = {
+        ".no-scrollbar::-webkit-scrollbar": {
+          display: "none",
+        },
+        ".no-scrollbar": {
+          "-ms-overflow-style": "none",
+          "scrollbar-width": "none",
+        },
+      };
+
+      addUtilities(newUtilities, ["responsive", "hover"]);
+    },
+  ],
 };
 export default config;
