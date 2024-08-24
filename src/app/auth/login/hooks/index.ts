@@ -1,8 +1,9 @@
-import { auth, createUserWithEmailAndPassword } from "@/app/firebaseConfig";
+import { auth } from "@/app/firebaseConfig";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   FacebookAuthProvider,
   GoogleAuthProvider,
+  signInWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
 import { useState } from "react";
@@ -15,28 +16,19 @@ export type FormValues = {
   confirmPassword: string;
 };
 
-const schema = z
-  .object({
-    email: z.string().email({
-      message:
-        "Invalid email. Check that the email you entered is correct and try again.",
-    }),
-    password: z
-      .string()
-      .min(8, { message: "Password must be at least 8 characters long" })
-      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
-      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
-      .regex(/[0-9]/, "Password must contain at least one number")
-      .regex(
-        /[@$!%*?&]/,
-        "Password must contain at least one special character"
-      ),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Password confirmation mismatch. Try again",
-  });
+const schema = z.object({
+  email: z.string().email({
+    message:
+      "Invalid email. Check that the email you entered is correct and try again.",
+  }),
+  password: z
+    .string()
+    .min(8, { message: "Password must be at least 8 characters long" })
+    .regex(
+      /[A-Za-z0-9@#$%^&*]/,
+      "Password must contain at least one letter, one number, and one special character"
+    ),
+});
 
 export const useForm = () => {
   const {
@@ -62,7 +54,7 @@ export const useForm = () => {
     setLoading(true);
     setSubmissionError(null);
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      await signInWithEmailAndPassword(auth, data.email, data.password);
       reset();
     } catch (error: any) {
       if (error.code) {
@@ -80,7 +72,7 @@ export const useForm = () => {
     const provider = new GoogleAuthProvider();
     try {
       setGoogleLoading(true);
-      await signInWithPopup(auth, provider);
+      await signInWithPopup(auth, provider); // You can use signInWithRedirect if you prefer
     } catch (error: any) {
       setSubmissionError(error.code);
     } finally {

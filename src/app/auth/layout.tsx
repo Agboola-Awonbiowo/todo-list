@@ -11,7 +11,7 @@ export default function RootLayout({
     <div className="w-full h-screen flex overflow-x-hidden px-[16px] xl:px-0">
       <div className="flex-1 w-full xl:w-1/2 xl:pt-[100px] pt-[40px] flex  overflow-y-scroll no-scrollbar  justify-center">
         <div className="flex flex-col md:items-center">
-          <div>
+          <div className="flex flex-col h-full">
             <h1 className="text-black text-2xl font-bold">Welcome Back 👋</h1>
             <p className="font-medium md:w-[360px] mt-[20px]">
               Today is a new day. It's your day. You shape it. Sign in to start
@@ -20,7 +20,7 @@ export default function RootLayout({
             <div className="flex-1 w-full md:w-[360px] lg:mb-[30px]">
               {children}
             </div>
-            <footer className="text-center  lg:w-full">
+            <footer className="lg:w-full text-center pb-[20px]">
               <p className="text-gray-300">&copy; 2023 ALL RIGHTS RESERVED</p>
             </footer>
           </div>
