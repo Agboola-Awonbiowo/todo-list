@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/shared/button";
 import { Inputfield } from "@/shared/inputfield";
 import React, { FC } from "react";
 
@@ -8,6 +9,9 @@ const page: FC<pageProps> = ({}) => {
   return (
     <div className="mt-[20px]">
       <Inputfield label="Email" placeholder="Example@gmail.com" type="email" />
+      <div className="mt-[18px]">
+        <Button type="submit">Send</Button>
+      </div>
     </div>
   );
 };
