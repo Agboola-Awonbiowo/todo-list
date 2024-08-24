@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+
 const firebaseConfig = {
   apiKey: "AIzaSyAas7FbeHfxwl4jSXZml-euuaigy697Vdo",
   authDomain: "todo-list-app-74000.firebaseapp.com",
@@ -12,5 +13,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-export const auth = getAuth(app);
-export { db };
+const auth = getAuth(app);
+
+export { auth, createUserWithEmailAndPassword, db };

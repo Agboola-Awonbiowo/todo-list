@@ -33,7 +33,7 @@ export const Button: React.FC<ButtonProps> = ({
     >
       <span className="flex justify-center items-center gap-x-2">
         {children}
-        {isLoading && <SpinnerIcon />}
+        {isLoading && <SpinnerIcon className="h-[24px] w-[24px]" />}
       </span>
     </button>
   );
