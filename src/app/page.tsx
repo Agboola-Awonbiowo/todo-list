@@ -7,6 +7,10 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      router.push("/todo");
+    }
     const timer = setTimeout(() => {
       setLoading(false);
       router.push("/auth/signup");

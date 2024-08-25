@@ -5,6 +5,7 @@ import {
   GoogleAuthProvider,
   signInWithPopup,
 } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { SubmitHandler, useForm as useReactHookForm } from "react-hook-form";
 import { z } from "zod";
@@ -15,7 +16,7 @@ export type FormValues = {
   confirmPassword: string;
 };
 
-const schema = z
+const validationSchema = z
   .object({
     email: z.string().email({
       message:
@@ -35,17 +36,23 @@ const schema = z
   })
   .refine((data) => data.password === data.confirmPassword, {
     path: ["confirmPassword"],
-    message: "Password confirmation mismatch. Try again",
+    message: "Password confirmation mismatch. Try again.",
   });
 
-export const useForm = () => {
+export const useAuth = () => {
+  const router = useRouter();
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [googleLoading, setGoogleLoading] = useState<boolean>(false);
+  const [facebookLoading, setFacebookLoading] = useState<boolean>(false);
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useReactHookForm<FormValues>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(validationSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -53,24 +60,25 @@ export const useForm = () => {
     },
   });
 
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [googleLoading, setGoogleLoading] = useState<boolean>(false);
-  const [facebookLoading, setFacebookLoading] = useState<boolean>(false);
-
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setLoading(true);
     setSubmissionError(null);
+
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await createUserWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+      const token = await userCredential.user.getIdToken();
+
+      localStorage.setItem("authToken", token);
+      router.push("/todo");
       reset();
     } catch (error: any) {
-      if (error.code) {
-        console.log(error.code);
-        setSubmissionError(error.code);
-      } else {
-        setSubmissionError("An unexpected error occurred. Please try again.");
-      }
+      setSubmissionError(
+        error.code || "An unexpected error occurred. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -78,25 +86,31 @@ export const useForm = () => {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
-    try {
-      setGoogleLoading(true);
-      await signInWithPopup(auth, provider);
-    } catch (error: any) {
-      setSubmissionError(error.code);
-    } finally {
-      setGoogleLoading(false);
-    }
+    handleSocialSignIn(provider, setGoogleLoading);
   };
 
   const signInWithFacebook = async () => {
     const provider = new FacebookAuthProvider();
+    handleSocialSignIn(provider, setFacebookLoading);
+  };
+
+  const handleSocialSignIn = async (
+    provider: GoogleAuthProvider | FacebookAuthProvider,
+    setLoading: React.Dispatch<React.SetStateAction<boolean>>
+  ) => {
+    setLoading(true);
     try {
-      setFacebookLoading(true);
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      const token = await result.user.getIdToken();
+
+      localStorage.setItem("authToken", token);
+      router.push("/todo");
     } catch (error: any) {
-      setSubmissionError(error.code);
+      setSubmissionError(
+        error.code || "An unexpected error occurred. Please try again."
+      );
     } finally {
-      setFacebookLoading(false);
+      setLoading(false);
     }
   };
 
@@ -106,10 +120,10 @@ export const useForm = () => {
     errors,
     submissionError,
     loading,
+    googleLoading,
+    facebookLoading,
     onSubmit,
     signInWithGoogle,
     signInWithFacebook,
-    googleLoading,
-    facebookLoading,
   };
 };
