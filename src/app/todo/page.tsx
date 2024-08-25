@@ -41,6 +41,7 @@ const Page = () => {
     if (!token) {
       router.push("/login");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onSubmit = async (data: any) => {

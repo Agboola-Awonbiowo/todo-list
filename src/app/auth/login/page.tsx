@@ -80,8 +80,8 @@ const Page = () => {
         disabled={googleLoading}
         isLoading={googleLoading}
       >
-        <Image className="w-[30px]" src={GoogleLogo} alt="#" /> Sign in with
-        Google
+        <Image className="w-[30px]" src={GoogleLogo} alt="Google Logo" />
+        Sign in with Google
       </Button>
 
       <Button
@@ -92,8 +92,8 @@ const Page = () => {
         disabled={facebookLoading}
         isLoading={facebookLoading}
       >
-        <Image className="w-[24px]" src={FacebookLogo} alt="#" /> Sign in with
-        Facebook
+        <Image className="w-[24px]" src={FacebookLogo} alt="Facebook Logo" />
+        Sign in with Facebook
       </Button>
 
       <p className="text-center mt-[30px]">

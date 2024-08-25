@@ -14,11 +14,16 @@ import { z } from "zod";
 const schema = z.object({
   email: z
     .string()
-    .email("Invalid email. Check that the email you entered is correct and try again."),
+    .email(
+      "Invalid email. Check that the email you entered is correct and try again."
+    ),
   password: z
     .string()
     .min(8, "Password must be at least 8 characters long")
-    .regex(/[A-Za-z0-9@#$%^&*]/, "Password must contain at least one letter, one number, and one special character"),
+    .regex(
+      /[A-Za-z0-9@#$%^&*]/,
+      "Password must contain at least one letter, one number, and one special character"
+    ),
 });
 
 export type FormValues = {
@@ -52,14 +57,20 @@ export const useAuth = () => {
     setSubmissionError(null);
 
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
       const token = await userCredential.user.getIdToken();
 
       localStorage.setItem("authToken", token);
       router.push("/todo");
       reset();
     } catch (error: any) {
-      setSubmissionError(error.code || "An unexpected error occurred. Please try again.");
+      setSubmissionError(
+        error.code || "An unexpected error occurred. Please try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -76,7 +87,9 @@ export const useAuth = () => {
       localStorage.setItem("authToken", token);
       router.push("/todo");
     } catch (error: any) {
-      setSubmissionError(error.code);
+      setSubmissionError(
+        error.code || "An unexpected error occurred. Please try again."
+      );
     } finally {
       setGoogleLoading(false);
     }
@@ -93,7 +106,9 @@ export const useAuth = () => {
       localStorage.setItem("authToken", token);
       router.push("/todo");
     } catch (error: any) {
-      setSubmissionError(error.code);
+      setSubmissionError(
+        error.code || "An unexpected error occurred. Please try again."
+      );
     } finally {
       setFacebookLoading(false);
     }

@@ -23,8 +23,8 @@ export default function RootLayout({
           <div className="flex flex-col h-full">
             <h1 className="text-black text-2xl font-bold">Welcome Back 👋</h1>
             <p className="font-medium md:w-[360px] mt-[20px]">
-              Today is a new day. It's your day. You shape it. Sign in to start
-              managing your projects.
+              Today is a new day. It&apos;s your day. You shape it. Sign in to
+              start managing your projects.
             </p>
             <div className="flex-1 w-full md:w-[360px] lg:mb-[30px]">
               {children}
