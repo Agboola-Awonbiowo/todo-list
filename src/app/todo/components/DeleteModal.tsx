@@ -1,6 +1,5 @@
 import Modal from "@/shared/Modal";
 import { Button } from "@/shared/button";
-import React, { FC } from "react";
 
 interface DeleteConfirmationModalProps {
   open: boolean;
@@ -9,12 +8,12 @@ interface DeleteConfirmationModalProps {
   deleteLoading: boolean;
 }
 
-const DeleteConfirmationModal: FC<DeleteConfirmationModalProps> = ({
+const DeleteConfirmationModal = ({
   open,
   close,
   onConfirm,
   deleteLoading,
-}) => {
+}: DeleteConfirmationModalProps) => {
   return (
     <Modal isOpen={open} onClose={close}>
       <h2 className="text-lg">Confirm Deletion</h2>

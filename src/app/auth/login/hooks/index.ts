@@ -11,27 +11,29 @@ import { useState } from "react";
 import { SubmitHandler, useForm as useReactHookForm } from "react-hook-form";
 import { z } from "zod";
 
+const schema = z.object({
+  email: z
+    .string()
+    .email("Invalid email. Check that the email you entered is correct and try again."),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters long")
+    .regex(/[A-Za-z0-9@#$%^&*]/, "Password must contain at least one letter, one number, and one special character"),
+});
+
 export type FormValues = {
   email: string;
   password: string;
-  confirmPassword: string;
 };
 
-const schema = z.object({
-  email: z.string().email({
-    message:
-      "Invalid email. Check that the email you entered is correct and try again.",
-  }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" })
-    .regex(
-      /[A-Za-z0-9@#$%^&*]/,
-      "Password must contain at least one letter, one number, and one special character"
-    ),
-});
+export const useAuth = () => {
+  const [submissionError, setSubmissionError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [googleLoading, setGoogleLoading] = useState<boolean>(false);
+  const [facebookLoading, setFacebookLoading] = useState<boolean>(false);
 
-export const useForm = () => {
+  const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -42,37 +44,22 @@ export const useForm = () => {
     defaultValues: {
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
-
-  const [submissionError, setSubmissionError] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [googleLoading, setGoogleLoading] = useState<boolean>(false);
-  const [facebookLoading, setFacebookLoading] = useState<boolean>(false);
-
-  const router = useRouter();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     setLoading(true);
     setSubmissionError(null);
+
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        data.email,
-        data.password
-      );
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       const token = await userCredential.user.getIdToken();
 
-      localStorage.setItem("authToken", JSON.stringify(token));
+      localStorage.setItem("authToken", token);
       router.push("/todo");
       reset();
     } catch (error: any) {
-      if (error.code) {
-        setSubmissionError(error.code);
-      } else {
-        setSubmissionError("An unexpected error occurred. Please try again.");
-      }
+      setSubmissionError(error.code || "An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -80,10 +67,12 @@ export const useForm = () => {
 
   const signInWithGoogle = async () => {
     const provider = new GoogleAuthProvider();
+    setGoogleLoading(true);
+
     try {
-      setGoogleLoading(true);
       const result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken();
+
       localStorage.setItem("authToken", token);
       router.push("/todo");
     } catch (error: any) {
@@ -95,10 +84,12 @@ export const useForm = () => {
 
   const signInWithFacebook = async () => {
     const provider = new FacebookAuthProvider();
+    setFacebookLoading(true);
+
     try {
-      setFacebookLoading(true);
       const result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken();
+
       localStorage.setItem("authToken", token);
       router.push("/todo");
     } catch (error: any) {

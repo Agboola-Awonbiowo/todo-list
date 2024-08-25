@@ -6,13 +6,14 @@ import Deleteicon from "@public/images/deleteicon.png";
 import Updateicon from "@public/images/updateicon.png";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { FC, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AddModal from "./components/AddModal";
 import DeleteConfirmationModal from "./components/DeleteModal";
 import UpdateModal from "./components/UpdateModal";
-import { useAddItemForm } from "./hooks";
+import { groupItemsByDate } from "./helper";
+import { useTodoManager } from "./hooks";
 
-const Page: FC = () => {
+const Page = () => {
   const [items, setItems] = useState<any[]>([]);
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
   const [openUpdateModal, setOpenUpdateModal] = useState<boolean>(false);
@@ -32,7 +33,7 @@ const Page: FC = () => {
     deleteLoading,
     addLoading,
     logout,
-  } = useAddItemForm(setItems);
+  } = useTodoManager(setItems);
 
   useEffect(() => {
     fetchItems();
@@ -71,8 +72,10 @@ const Page: FC = () => {
     }
   };
 
+  const groupedItems = groupItemsByDate(items);
+
   return (
-    <div className="flex justify-center py-10 bg-[#f4f4f4] h-screen">
+    <div className="flex justify-center py-10 bg-[#f4f4f4] h-screen relative overflow-x-hidden">
       {isLoading && <LoadingScreen />}
       <AddModal
         open={openAddModal}
@@ -96,7 +99,7 @@ const Page: FC = () => {
         onConfirm={handleDelete}
         deleteLoading={deleteLoading}
       />
-      <div className="bg-white w-[421px] rounded-[10px] pt-[70.17px] px-[23.39px] relative">
+      <div className="bg-white w-[421px] rounded-[10px] pt-[70.17px] px-[23.39px] overflow-y-auto h-[calc(100vh-70px)] pb-[100px] relative overflow-x-hidden">
         <div className="flex justify-between">
           <h1 className="font-semibold text-3xl">To Do List</h1>
           <Button
@@ -109,59 +112,65 @@ const Page: FC = () => {
         </div>
         <h2 className="font-semibold text-lg mt-[42.01px]">This Week</h2>
         <div className="mt-[27.29px]">
-          <p className="font-medium text-pink">Monday, 12th May</p>
-          {items?.map((item, idx) => (
-            <div
-              key={idx}
-              className="bg-white shadow-xl px-[23.39px] py-[15px] mt-[14px] rounded-[12px] flex justify-between items-center"
-            >
-              <div>
-                <p className="text-lg text-black">{item.text}</p>
+          {Object.entries(groupedItems).map(([date, itemsForDate]) => (
+            <div key={date} className="mt-4">
+              <p className="font-medium text-pink">{date}</p>
+              {itemsForDate.map((item: any, idx: number) => (
                 <div
-                  className={`bg-pink100 py-[3.51px] px-[5.85px] mt-[9px] rounded-[5px] ${
-                    item.priority === "Medium" ? "w-[59.86px]" : "w-[38.86px]"
-                  }`}
+                  key={idx}
+                  className="bg-white shadow-xl px-[23.39px] py-[15px] mt-[14px] rounded-[12px] flex justify-between items-center"
                 >
-                  <p
-                    className={`font-semibold text-xs ${
-                      item.priority === "High"
-                        ? "text-highColor"
-                        : item.priority === "Medium"
-                        ? "text-mediumColor"
-                        : "text-black"
-                    }`}
-                  >
-                    {item.priority}
-                  </p>
+                  <div>
+                    <p className="text-lg text-black">{item.text}</p>
+                    <div
+                      className={`bg-pink100 py-[3.51px] px-[5.85px] mt-[9px] rounded-[5px] ${
+                        item.priority === "Medium"
+                          ? "w-[59.86px]"
+                          : "w-[38.86px]"
+                      }`}
+                    >
+                      <p
+                        className={`font-semibold text-xs ${
+                          item.priority === "High"
+                            ? "text-highColor"
+                            : item.priority === "Medium"
+                            ? "text-mediumColor"
+                            : "text-black"
+                        }`}
+                      >
+                        {item.priority}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex gap-x-[12px]">
+                    <div>
+                      <Image
+                        onClick={() => openUpdateModalWithItem(item)}
+                        className="w-[19px] cursor-pointer"
+                        src={Updateicon}
+                        alt="Update"
+                      />
+                    </div>
+                    <div>
+                      <Image
+                        onClick={() => openDeleteModalWithItem(item)}
+                        className="w-[19px] cursor-pointer"
+                        src={Deleteicon}
+                        alt="Delete"
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex gap-x-[12px]">
-                <div>
-                  <Image
-                    onClick={() => openUpdateModalWithItem(item)}
-                    className="w-[19px] cursor-pointer"
-                    src={Updateicon}
-                    alt="Update"
-                  />
-                </div>
-                <div>
-                  <Image
-                    onClick={() => openDeleteModalWithItem(item)}
-                    className="w-[19px] cursor-pointer"
-                    src={Deleteicon}
-                    alt="Delete"
-                  />
-                </div>
-              </div>
+              ))}
             </div>
           ))}
-        </div>
-        <div
-          onClick={() => setOpenAddModal(true)}
-          className="absolute bottom-5 right-5 cursor-pointer"
-        >
-          <div className="bg-pink p-[18px] rounded-full w-[70.17px] h-[70.17px] flex justify-center items-center">
-            <Image className="w-[27.77px]" src={buttonIcon} alt="Add" />
+          <div
+            onClick={() => setOpenAddModal(true)}
+            className="flex justify-end mt-10"
+          >
+            <div className="bg-pink p-[18px] rounded-full w-[70.17px] h-[70.17px] flex justify-center items-center">
+              <Image className="w-[27.77px]" src={buttonIcon} alt="Add" />
+            </div>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@ import { Button } from "@/shared/button";
 import { Inputfield } from "@/shared/inputfield";
 import Modal from "@/shared/Modal";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { FC, useEffect } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 
@@ -21,13 +21,13 @@ interface UpdateModalProps {
   updateLoading: boolean;
 }
 
-const UpdateModal: FC<UpdateModalProps> = ({
+const UpdateModal = ({
   open,
   close,
   existingData,
   updateLoading,
   onSubmit,
-}) => {
+}: UpdateModalProps) => {
   const {
     register,
     handleSubmit,
@@ -81,7 +81,7 @@ const UpdateModal: FC<UpdateModalProps> = ({
         <Button
           isLoading={updateLoading}
           disabled={updateLoading}
-          className="mt-[20px]"
+          className="mt-[20px] !bg-pink"
           type="submit"
         >
           Update

@@ -7,6 +7,7 @@ import {
   deleteDoc,
   doc,
   getDocs,
+  orderBy,
   query,
   updateDoc,
 } from "firebase/firestore";
@@ -23,13 +24,14 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-export const useAddItemForm = (onItemsUpdated: (items: any[]) => void) => {
+export const useTodoManager = (onItemsUpdated: (items: any[]) => void) => {
   const [error, setError] = useState<string | null>(null);
   const [addLoading, setAddLoading] = useState<boolean>(false);
-  const [updateLoading, setUpdateLaoding] = useState<boolean>(false);
+  const [updateLoading, setUpdateLoading] = useState<boolean>(false);
   const [deleteLoading, setDeleteLoading] = useState<boolean>(false);
-  const [isLoading, setIsloading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
+
   const {
     register,
     handleSubmit,
@@ -44,9 +46,9 @@ export const useAddItemForm = (onItemsUpdated: (items: any[]) => void) => {
   });
 
   const fetchItems = async () => {
-    setIsloading(true);
+    setIsLoading(true);
     try {
-      const q = query(collection(db, "todo"));
+      const q = query(collection(db, "todo"), orderBy("timestamp", "asc"));
       const querySnapshot = await getDocs(q);
       const items = querySnapshot.docs.map((doc) => ({
         id: doc.id,
@@ -56,14 +58,17 @@ export const useAddItemForm = (onItemsUpdated: (items: any[]) => void) => {
     } catch (e) {
       toast.error("Failed to fetch items.");
     } finally {
-      setIsloading(false);
+      setIsLoading(false);
     }
   };
 
   const addItem = async (data: FormValues) => {
     setAddLoading(true);
     try {
-      await addDoc(collection(db, "todo"), data);
+      await addDoc(collection(db, "todo"), {
+        ...data,
+        timestamp: new Date(),
+      });
       toast.success("Item added successfully!");
       reset();
       await fetchItems();
@@ -89,7 +94,7 @@ export const useAddItemForm = (onItemsUpdated: (items: any[]) => void) => {
   };
 
   const updateItem = async (id: string, data: Partial<FormValues>) => {
-    setUpdateLaoding(true);
+    setUpdateLoading(true);
     try {
       await updateDoc(doc(db, "todo", id), data);
       toast.success("Item updated successfully!");
@@ -97,7 +102,7 @@ export const useAddItemForm = (onItemsUpdated: (items: any[]) => void) => {
     } catch (e) {
       toast.error("Failed to update item. Please try again.");
     } finally {
-      setUpdateLaoding(false);
+      setUpdateLoading(false);
     }
   };
 
@@ -124,6 +129,6 @@ export const useAddItemForm = (onItemsUpdated: (items: any[]) => void) => {
     updateLoading,
     deleteLoading,
     isLoading,
-    logout
+    logout,
   };
 };

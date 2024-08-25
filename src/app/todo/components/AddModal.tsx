@@ -1,20 +1,20 @@
 import { Button } from "@/shared/button";
 import { Inputfield } from "@/shared/inputfield";
 import Modal from "@/shared/Modal";
-import React, { FC } from "react";
-import { useAddItemForm } from "../hooks";
+import React from "react";
+import { useTodoManager } from "../hooks";
 
 interface AddModalProps {
   open: boolean;
   close: () => void;
-  register: ReturnType<typeof useAddItemForm>["register"];
-  errors: ReturnType<typeof useAddItemForm>["errors"];
+  register: ReturnType<typeof useTodoManager>["register"];
+  errors: ReturnType<typeof useTodoManager>["errors"];
   onSubmit: (data: any) => Promise<void>;
-  handleSubmit: ReturnType<typeof useAddItemForm>["handleSubmit"];
+  handleSubmit: ReturnType<typeof useTodoManager>["handleSubmit"];
   addLoading: boolean;
 }
 
-const AddModal: FC<AddModalProps> = ({
+const AddModal = ({
   open,
   close,
   register,
@@ -22,7 +22,7 @@ const AddModal: FC<AddModalProps> = ({
   onSubmit,
   addLoading,
   handleSubmit,
-}) => {
+}: AddModalProps) => {
   return (
     <Modal isOpen={open} onClose={close}>
       <h2 className="text-lg">Add todo</h2>
@@ -62,7 +62,7 @@ const AddModal: FC<AddModalProps> = ({
         <Button
           isLoading={addLoading}
           disabled={addLoading}
-          className="mt-[20px]"
+          className="mt-[20px] !bg-pink"
           type="submit"
         >
           Add

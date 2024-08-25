@@ -5,12 +5,10 @@ import FacebookLogo from "@public/images/facebookicon.png";
 import GoogleLogo from "@public/images/googleicon.png";
 import Image from "next/image";
 import Link from "next/link";
-import React, { FC } from "react";
-import { useForm } from "./hooks";
+import React, { useState } from "react";
+import { useAuth } from "./hooks";
 
-interface pageProps {}
-
-const page: FC<pageProps> = ({}) => {
+const page = () => {
   const {
     register,
     handleSubmit,
@@ -22,7 +20,16 @@ const page: FC<pageProps> = ({}) => {
     signInWithFacebook,
     googleLoading,
     facebookLoading,
-  } = useForm();
+  } = useAuth();
+
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] =
+    useState<boolean>(false);
+
+  const togglePasswordVisibility = () => setShowPassword(!showPassword);
+  const toggleConfirmPasswordVisibility = () =>
+    setShowConfirmPassword(!showConfirmPassword);
+
   return (
     <div className="mt-[20px]">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -38,29 +45,41 @@ const page: FC<pageProps> = ({}) => {
             {errors.email?.message}
           </p>
         </div>
-        <div className="mt-[16px]">
+        <div className="mt-[16px] relative">
           <Inputfield
             label="Password"
             placeholder="At leat 8 characters"
-            type="password"
+            type={showPassword ? "text" : "password"}
             {...register("password")}
             disabled={loading}
           />
           <p className="text-darkRed text-xs mt-[5px]">
             {errors.password?.message}
           </p>
+          <span
+            className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer top-[25px]"
+            onClick={togglePasswordVisibility}
+          >
+            {showPassword ? "🙈" : "👁️"}
+          </span>
         </div>
-        <div className="mt-[16px]">
+        <div className="mt-[16px] relative">
           <Inputfield
             label="Confirm  Password"
             placeholder="Confirm Password"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             {...register("confirmPassword")}
             disabled={loading}
           />
           <p className="text-darkRed text-xs mt-[5px]">
             {errors.confirmPassword?.message}
           </p>
+          <span
+            className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer top-[25px]"
+            onClick={toggleConfirmPasswordVisibility}
+          >
+            {showConfirmPassword ? "🙈" : "👁️"}
+          </span>
         </div>
         {submissionError && (
           <p className="text-red-600 mt-2">{submissionError}</p>
