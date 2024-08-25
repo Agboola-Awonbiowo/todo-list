@@ -15,6 +15,9 @@ bun dev
 ```
 # Todo List App
 
+Installation
+After cloning the project run npm install
+
 ## Overview
 
 This project is a Todo List application built with **Next.js** and **TypeScript**. It allows users to manage their tasks with features including creating, updating, and deleting todos, along with assigning priorities. Todos are organized and displayed by date, making it easy to view tasks for specific days. Users can sign up and log in using email/password authentication or Google authentication. The project uses **Firebase** for authentication and data storage, **React Hook Form** and **Zod** for form validation, and **React Toastify** for toast notifications.
