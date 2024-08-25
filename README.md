@@ -17,8 +17,6 @@ bun dev
 ```
 # Todo List App
 
-Installation
-
 
 ## Overview
 
