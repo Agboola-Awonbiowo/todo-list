@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run npm install
+First, run npm install or yarn
 
 then run the development server:
 
@@ -10,11 +10,7 @@ then run the development server:
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+
 # Todo List App
 
 
